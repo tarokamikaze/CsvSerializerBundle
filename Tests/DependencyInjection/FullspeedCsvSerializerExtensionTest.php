@@ -5,6 +5,8 @@ namespace Fullspeed\CsvSerializerBundle\Tests\DependencyInjection;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Fullspeed\CsvSerializerBundle\FullspeedCsvSerializerBundle;
 use Fullspeed\CsvSerializerBundle\Tests\Fixtures\Person;
+use JMS\Serializer\Serializer;
+use JMS\SerializerBundle\JMSSerializerBundle;
 use Symfony\Component\DependencyInjection\Compiler\ResolveDefinitionTemplatesPass;
 use Symfony\Component\DependencyInjection\Compiler\ResolveParameterPlaceHoldersPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -76,9 +78,17 @@ class FullspeedCsvSerializerExtensionTest extends \PHPUnit_Framework_TestCase
         $container->set('annotation_reader', new AnnotationReader());
         $container->set('translator', self::createMock('Symfony\\Component\\Translation\\TranslatorInterface'));
         $container->set('debug.stopwatch', self::createMock('Symfony\\Component\\Stopwatch\\Stopwatch'));
+
         $container->registerExtension($extension);
         $extension->load($configs, $container);
         $bundle->build($container);
+
+        $jmsSerializerBundle = new JMSSerializerBundle($kernel);
+        $jmsSerializerExtension = $jmsSerializerBundle->getContainerExtension();
+        $container->registerExtension($jmsSerializerExtension);
+        $jmsSerializerExtension->load($configs, $container);
+        $jmsSerializerBundle->build($container);
+
         $container->getCompilerPassConfig()->setOptimizationPasses(array(
             new ResolveParameterPlaceHoldersPass(),
             new ResolveDefinitionTemplatesPass(),

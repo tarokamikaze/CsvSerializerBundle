@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-namespace Fullspeed\CsvSerializerBundle;
+namespace Fullspeed\CsvSerializerBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
