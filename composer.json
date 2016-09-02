@@ -1,0 +1,28 @@
+{
+  "name": "tarokamikaze/csv-serializer-bundle",
+  "type": "symfony-bundle",
+  "description": "Allows you to serialize data to csv with JmsSerializerBundle.",
+  "keywords": ["serialization", "csv"],
+  "license": "Apache2",
+  "authors": [
+    {
+      "name": "Eiji Kuwata"
+    }
+  ],
+  "require": {
+    "php": ">=5.4.0",
+    "jms/serializer-bundle": "~1.1",
+    "doctrine/annotations": "^1.0"
+  },
+  "autoload": {
+    "psr-0": { "TaroKamikaze\\CsvSerializerBundle": "" }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "target-dir": "TaroKamikaze/CsvSerializerBundle",
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.1-dev"
+    }
+  }
+}
