@@ -1,5 +1,5 @@
 {
-  "name": "tarokamikaze/csv-serializer-bundle",
+  "name": "fullspeed/csv-serializer-bundle",
   "type": "symfony-bundle",
   "description": "Allows you to serialize data to csv with JmsSerializerBundle.",
   "keywords": ["serialization", "csv"],
@@ -12,14 +12,21 @@
   "require": {
     "php": ">=5.4.0",
     "jms/serializer-bundle": "~1.1",
-    "doctrine/annotations": "^1.0"
+    "doctrine/annotations": "^1.0",
+    "symfony/framework-bundle": "~2.3|~3.0"
+  },
+  "require-dev": {
+    "symfony/yaml": "*",
+    "symfony/class-loader": "*",
+    "symfony/finder": "*",
+    "phpunit/phpunit": "~5.4"
   },
   "autoload": {
-    "psr-0": { "TaroKamikaze\\CsvSerializerBundle": "" }
+    "psr-0": { "Fullspeed\\CsvSerializerBundle": "" }
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
-  "target-dir": "TaroKamikaze/CsvSerializerBundle",
+  "target-dir": "Fullspeed/CsvSerializerBundle",
   "extra": {
     "branch-alias": {
       "dev-master": "1.1-dev"

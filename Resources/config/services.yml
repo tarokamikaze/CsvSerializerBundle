@@ -1,0 +1,17 @@
+parameters:
+    fullspeed_csv.serialization_visitor.class: Fullspeed\CsvSerializerBundle\Serializer\Visitor\CsvSerializationVisitor
+    fullspeed_csv.config_loader.class: Fullspeed\CsvSerializerBundle\Tests\Fixtures\DummyConfigLoader
+services:
+
+    fullspeed_csv.config_loader:
+        class: "%fullspeed_csv.config_loader.class%"
+
+    fullspeed_csv.serialization_visitor:
+        class: "%fullspeed_csv.serialization_visitor.class%"
+        arguments:
+            - "@jms_serializer.naming_strategy"
+            - "@translator"
+            - "@fullspeed_csv.config_loader"
+            - "%kernel.cache_dir%"
+        tags:
+            -  { name: jms_serializer.serialization_visitor, format: csv }
