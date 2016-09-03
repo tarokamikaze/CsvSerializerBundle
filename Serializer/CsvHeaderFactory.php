@@ -2,6 +2,8 @@
 namespace Fullspeed\CsvSerializerBundle\Serializer;
 
 
+use JMS\Serializer\Context;
+
 interface CsvHeaderFactory
 {
     /**

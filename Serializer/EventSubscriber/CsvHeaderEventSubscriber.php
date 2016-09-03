@@ -71,20 +71,13 @@ class CsvHeaderEventSubscriber implements \JMS\Serializer\EventDispatcher\EventS
             'Doctrine\ODM\MongoDB\PersistentCollection',
             'Doctrine\ODM\PHPCR\PersistentCollection'
         );
-        // Get the first item.
-        $first = $event->getObject();
-        if (is_object($data)) {
-            foreach ($collectionTypes as $type) {
-                if ($data instanceof $type || is_subclass_of($data, $type)) {
-                    $first = $data->first();
-                    break;
-                }
+        foreach ($collectionTypes as $type) {
+            if ($event->getObject() instanceof $type || is_subclass_of($event->getObject(), $type)) {
+                return;
             }
-        } elseif (is_array($data)) {
-            $first = reset($data);
         }
 
-        $header = $this->headerFactory->generate($first, $event->getContext());
+        $header = $this->headerFactory->generate($event->getObject(), $event->getContext());
 
         $this->exporter->export($this->filePath, [$header]);
 

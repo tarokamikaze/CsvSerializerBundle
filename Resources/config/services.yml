@@ -3,12 +3,14 @@ parameters:
     fullspeed_csv_serializer.csv_header_factory.translation.class: Fullspeed\CsvSerializerBundle\Serializer\TranslationalCsvHeaderFactory
     fullspeed_csv_serializer.exporter_factory.class:
         Fullspeed\CsvSerializerBundle\Csv\ExporterFactory
+    fullspeed_csv_serializer.event_subscriber.csv_header.class:
+        Fullspeed\CsvSerializerBundle\Serializer\EventSubscriber\CsvHeaderEventSubscriber
 services:
     fullspeed_csv_serializer.serialization_visitor.csv:
         class: "%fullspeed_csv_serializer.serialization_visitor.class%"
         arguments:
             - '@jms_serializer.naming_strategy'
-            - '@fullspeed_csv_serializer.csv_header_factory.translation'
+            - '@fullspeed_csv_serializer.event_subscriber.csv_header'
             - '@fullspeed_csv_serializer.exporter_factory'
             - '%kernel.cache_dir%'
         tags:
@@ -18,8 +20,12 @@ services:
         class: '%fullspeed_csv_serializer.csv_header_factory.translation.class%'
         arguments:
             - '@translator'
-            - '@jms_serializer.metadata_factory'
         public: false
     fullspeed_csv_serializer.exporter_factory:
         class: '%fullspeed_csv_serializer.exporter_factory.class%'
         public: false
+    fullspeed_csv_serializer.event_subscriber.csv_header:
+        class: '%fullspeed_csv_serializer.event_subscriber.csv_header.class%'
+        arguments: [ '@fullspeed_csv_serializer.csv_header_factory.translation' ]
+        tags:
+            - { name: jms_serializer.event_subscriber, direction: serialization, format: csv }

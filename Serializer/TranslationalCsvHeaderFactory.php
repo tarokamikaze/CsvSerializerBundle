@@ -4,7 +4,6 @@ namespace Fullspeed\CsvSerializerBundle\Serializer;
 use JMS\Serializer\Context;
 use JMS\Serializer\Exception\RuntimeException;
 use JMS\Serializer\Metadata\PropertyMetadata;
-use Metadata\MetadataFactoryInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 
 /**
@@ -39,7 +38,8 @@ class TranslationalCsvHeaderFactory implements CsvHeaderFactory
         $header = [];
 
         foreach ($metadata->propertyMetadata as $propertyMetadata) {
-            if ($context->getExclusionStrategy()->shouldSkipProperty($propertyMetadata, $context)) {
+            $exclusionStrategy = $context->getExclusionStrategy();
+            if ($exclusionStrategy && $exclusionStrategy->shouldSkipProperty($propertyMetadata, $context)) {
                 continue;
             }
 

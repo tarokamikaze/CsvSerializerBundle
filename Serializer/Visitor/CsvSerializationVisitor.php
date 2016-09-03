@@ -1,7 +1,6 @@
 <?php
 namespace Fullspeed\CsvSerializerBundle\Serializer\Visitor;
 
-
 use Fullspeed\CsvSerializerBundle\Csv\ExporterFactory;
 use Fullspeed\CsvSerializerBundle\Serializer\EventSubscriber\CsvHeaderEventSubscriber;
 use Goodby\CSV\Export\Standard\CsvFileObject;
@@ -40,7 +39,7 @@ class CsvSerializationVisitor extends GenericSerializationVisitor
     /**
      * CsvSerializationVisitor constructor.
      * @param \JMS\Serializer\Naming\PropertyNamingStrategyInterface $namingStrategy
-     * @param CsvHeaderFactory $headerFactory
+     * @param CsvHeaderEventSubscriber $headerFactory
      * @param ExporterFactory $exporterFactory
      * @param $cacheDir
      */
