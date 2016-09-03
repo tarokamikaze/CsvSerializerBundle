@@ -11,7 +11,6 @@ services:
             - '@fullspeed_csv_serializer.csv_header_factory.translation'
             - '@fullspeed_csv_serializer.exporter_factory'
             - '%kernel.cache_dir%'
-        public: false
         tags:
             -  { name: jms_serializer.serialization_visitor, format: csv }
 
