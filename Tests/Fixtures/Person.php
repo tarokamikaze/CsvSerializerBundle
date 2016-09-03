@@ -17,28 +17,44 @@
 
 namespace Fullspeed\CsvSerializerBundle\Tests\Fixtures;
 
-use Fullspeed\CsvSerializerBundle\Annotation as CsvSerializer;
+use Fullspeed\CsvSerializerBundle\Serializer\PropertyNameCoordinatable;
+use JMS\Serializer\Annotation as Serializer;
 
-class Person
+/**
+ * Class Person
+ * @package Fullspeed\CsvSerializerBundle\Tests\Fixtures
+ *
+ * @Serializer\AccessorOrder("custom", custom = {"gender"})
+ */
+class Person implements PropertyNameCoordinatable
 {
     /**
-     * @CsvSerializer\Expose(serializedName="firstName")
-     *
      * @var string
      */
     private $name;
 
     /**
-     * @CsvSerializer\Expose()
-     *
      * @var string
+     * @Serializer\SerializedName("sex")
      */
     private $gender;
 
     /**
      * @var integer
+     *
+     * @Serializer\Exclude()
      */
     private $age;
+
+    /**
+     * @return string
+     *
+     * @Serializer\VirtualProperty()
+     */
+    public function getType()
+    {
+        return 'Person';
+    }
 
     /**
      * @return string
@@ -86,5 +102,14 @@ class Person
     public function setAge($age)
     {
         $this->age = $age;
+    }
+
+    /**
+     * @param string $originalPropertyName
+     * @return string
+     */
+    public function coordinatePropertyName($originalPropertyName)
+    {
+        return 'Person.' . $originalPropertyName;
     }
 }

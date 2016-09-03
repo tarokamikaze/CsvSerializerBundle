@@ -1,10 +1,10 @@
 <?php
 namespace Fullspeed\CsvSerializerBundle\Tests\DependencyInjection;
 
-
 use Doctrine\Common\Annotations\AnnotationReader;
 use Fullspeed\CsvSerializerBundle\FullspeedCsvSerializerBundle;
 use Fullspeed\CsvSerializerBundle\Tests\Fixtures\Person;
+use Goodby\CSV\Export\Standard\CsvFileObject;
 use JMS\Serializer\Serializer;
 use JMS\SerializerBundle\JMSSerializerBundle;
 use Symfony\Component\DependencyInjection\Compiler\ResolveDefinitionTemplatesPass;
@@ -55,9 +55,13 @@ class FullspeedCsvSerializerExtensionTest extends \PHPUnit_Framework_TestCase
         $person2->setName('Eiji Kuwata');
         $person2->setGender('Female');
 
-        $actual = $serializer->serialize([$person1, $person2], 'csv');
+        /** @var CsvFileObject $csv */
+        $csv = $serializer->serialize([$person1, $person2], 'csv');
 
-        self::fail();
+        $actual = file_get_contents($csv->getRealPath());
+        $actual = mb_convert_encoding($actual, 'utf-8', 'SJIS-win');
+
+        self::assertEquals(3, substr_count($actual, "\r\n"));
     }
 
     private function getContainerForConfig(array $configs, KernelInterface $kernel = null)
@@ -76,7 +80,11 @@ class FullspeedCsvSerializerExtensionTest extends \PHPUnit_Framework_TestCase
         $container->setParameter('kernel.cache_dir', sys_get_temp_dir() . '/serializer');
         $container->setParameter('kernel.bundles', array());
         $container->set('annotation_reader', new AnnotationReader());
-        $container->set('translator', self::createMock('Symfony\\Component\\Translation\\TranslatorInterface'));
+
+        $translator = self::createMock('Symfony\\Component\\Translation\\TranslatorInterface');
+        $translator->expects(self::any())->method('trans')->willReturnArgument(0);
+        $container->set('translator', $translator);
+
         $container->set('debug.stopwatch', self::createMock('Symfony\\Component\\Stopwatch\\Stopwatch'));
 
         $container->registerExtension($extension);
