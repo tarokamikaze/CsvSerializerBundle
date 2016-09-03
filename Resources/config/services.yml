@@ -28,4 +28,4 @@ services:
         class: '%fullspeed_csv_serializer.event_subscriber.csv_header.class%'
         arguments: [ '@fullspeed_csv_serializer.csv_header_factory.translation' ]
         tags:
-            - { name: jms_serializer.event_subscriber, direction: serialization, format: csv }
+            - { name: jms_serializer.event_subscriber}

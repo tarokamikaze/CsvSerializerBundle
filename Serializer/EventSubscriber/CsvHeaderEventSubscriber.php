@@ -4,6 +4,7 @@ namespace Fullspeed\CsvSerializerBundle\Serializer\EventSubscriber;
 
 use Fullspeed\CsvSerializerBundle\Serializer\CsvHeaderFactory;
 use Goodby\CSV\Export\Standard\Exporter;
+use JMS\Serializer\GraphNavigator;
 
 /**
  * Class CsvHeaderEventSubscriber
@@ -54,13 +55,22 @@ class CsvHeaderEventSubscriber implements \JMS\Serializer\EventDispatcher\EventS
     public static function getSubscribedEvents()
     {
         return array(
-            array('event' => 'serializer.pre_serialize', 'method' => 'onPreSerialize'),
+            array(
+                'event' => 'serializer.pre_serialize',
+                'method' => 'onPreSerialize',
+                'direction' => 'serialization',
+                'format' => 'csv'
+            ),
         );
     }
 
     public function onPreSerialize(\JMS\Serializer\EventDispatcher\PreSerializeEvent $event)
     {
         if ($this->isExecuted) {
+            return;
+        }
+
+        if($event->getContext()->getFormat() !== 'csv' || $event->getContext()->getDirection() != GraphNavigator::DIRECTION_SERIALIZATION){
             return;
         }
 
