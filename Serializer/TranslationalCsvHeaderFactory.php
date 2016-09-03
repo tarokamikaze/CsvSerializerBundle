@@ -1,6 +1,7 @@
 <?php
 namespace Fullspeed\CsvSerializerBundle\Serializer;
 
+use JMS\Serializer\Context;
 use JMS\Serializer\Exception\RuntimeException;
 use JMS\Serializer\Metadata\PropertyMetadata;
 use Metadata\MetadataFactoryInterface;
@@ -18,32 +19,30 @@ class TranslationalCsvHeaderFactory implements CsvHeaderFactory
      */
     private $translator;
 
-    /**
-     * @var MetadataFactoryInterface
-     */
-    private $metadataFactory;
-
-
-    public function __construct(TranslatorInterface $translator, MetadataFactoryInterface $metadataFactory)
+    public function __construct(TranslatorInterface $translator)
     {
         $this->translator = $translator;
-        $this->metadataFactory = $metadataFactory;
     }
 
     /**
      * @param $root
-     * @return string[]
+     * @param Context $context
+     * @return array
      */
-    public function generate($root)
+    public function generate($root, Context $context)
     {
         if (!is_object($root)) {
             throw new RuntimeException("The root argument must be an object, " . gettype($root) . " given.");
         }
-        $metadata = $this->metadataFactory->getMetadataForClass(get_class($root));
+        $metadata = $context->getMetadataFactory()->getMetadataForClass(get_class($root));
 
         $header = [];
 
         foreach ($metadata->propertyMetadata as $propertyMetadata) {
+            if ($context->getExclusionStrategy()->shouldSkipProperty($propertyMetadata, $context)) {
+                continue;
+            }
+
             $header[] = $this->translate($propertyMetadata, $root);
         }
 

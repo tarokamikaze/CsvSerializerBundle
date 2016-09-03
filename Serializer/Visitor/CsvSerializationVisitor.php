@@ -3,7 +3,7 @@ namespace Fullspeed\CsvSerializerBundle\Serializer\Visitor;
 
 
 use Fullspeed\CsvSerializerBundle\Csv\ExporterFactory;
-use Fullspeed\CsvSerializerBundle\Serializer\CsvHeaderFactory;
+use Fullspeed\CsvSerializerBundle\Serializer\EventSubscriber\CsvHeaderEventSubscriber;
 use Goodby\CSV\Export\Standard\CsvFileObject;
 use Goodby\CSV\Export\Standard\Exporter;
 use JMS\Serializer\GenericSerializationVisitor;
@@ -12,9 +12,9 @@ class CsvSerializationVisitor extends GenericSerializationVisitor
 {
 
     /**
-     * @var CsvHeaderFactory
+     * @var CsvHeaderEventSubscriber
      */
-    private $headerFactory;
+    private $headerSubscriber;
 
     /**
      * @var ExporterFactory
@@ -46,12 +46,12 @@ class CsvSerializationVisitor extends GenericSerializationVisitor
      */
     public function __construct(
         \JMS\Serializer\Naming\PropertyNamingStrategyInterface $namingStrategy,
-        CsvHeaderFactory $headerFactory,
+        CsvHeaderEventSubscriber $headerSubscriber,
         ExporterFactory $exporterFactory,
         $cacheDir
     ) {
         parent::__construct($namingStrategy);
-        $this->headerFactory = $headerFactory;
+        $this->headerSubscriber = $headerSubscriber;
         $this->exporterFactory = $exporterFactory;
         $this->dir = $cacheDir . DIRECTORY_SEPARATOR . 'csv_serializer';
     }
@@ -62,42 +62,7 @@ class CsvSerializationVisitor extends GenericSerializationVisitor
      */
     public function prepare($data)
     {
-
-
-        // 初期化
         $this->initialize();
-
-        // 渡ってきている$dataが配列の類かを判別する。
-        // 配列の類だったら、あとでカラム順等の設定を読み込むために
-        // 要素のクラスを取得する。
-        // visitArray() などでチェックしたいところだが,それだと
-        // 最も上にある要素が配列か否かが判別できないので
-        // prepare() のタイミングで実装する。
-        // @see https://github.com/schmittjoh/serializer/blob/master/src/JMS/Serializer/Serializer.php#L91
-        $collectionTypes = array(
-            'ArrayCollection',
-            'Doctrine\Common\Collections\ArrayCollection',
-            'Doctrine\ORM\PersistentCollection',
-            'Doctrine\ODM\MongoDB\PersistentCollection',
-            'Doctrine\ODM\PHPCR\PersistentCollection'
-        );
-
-        // Get the first item.
-        $first = null;
-        if (is_object($data)) {
-            foreach ($collectionTypes as $type) {
-                if ($data instanceof $type || is_subclass_of($data, $type)) {
-                    $first = $data->first();
-                    break;
-                }
-            }
-        } elseif (is_array($data)) {
-            $first = reset($data);
-        }
-
-        $csvHeader = $this->headerFactory->generate($first);
-        $this->exporter->export($this->filePath, [$csvHeader]);
-
         return parent::prepare($data);
     }
 
@@ -113,6 +78,8 @@ class CsvSerializationVisitor extends GenericSerializationVisitor
         }
 
         $this->exporter = $this->exporterFactory->generate();
+
+        $this->headerSubscriber->initialize($this->exporter,$this->filePath);
     }
 
     private function clear()

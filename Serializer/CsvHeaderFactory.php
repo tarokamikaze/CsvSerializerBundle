@@ -5,8 +5,9 @@ namespace Fullspeed\CsvSerializerBundle\Serializer;
 interface CsvHeaderFactory
 {
     /**
-     * @param $root
+     * @param object $root
+     * @param Context $context
      * @return string[]
      */
-    public function generate($root);
+    public function generate($root, Context $context);
 }
